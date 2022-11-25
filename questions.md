@@ -44,6 +44,10 @@
 
 7. what's the difference in handling exceptions in promises, callbacks and
    async...await.
+
+- For async/await we need to add `async` to the function to be able to use it.
+- In callbacks you can access both error and data contrary to others where it either is success or fails
+
 8. How many arguments does setState take and why is it async.
 
 - It can take max 2 arguments. first one is object or callback function that returns new state. Second argument can be function which runs after setState is finished. Probably because of not blocking the UI while update is being done.

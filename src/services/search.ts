@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import useFetch from "@/hooks/useFetch";
 import { Search } from "@/interfaces/Search";
 
-type UseSearchReturn = (Search[] | boolean | string)[];
+type UseSearchReturn = [Search[], boolean, string];
 
 export const useSearch = (param: string): UseSearchReturn => {
   const [data, setData] = useState<Search[]>([]);
@@ -30,7 +30,7 @@ export const useSearch = (param: string): UseSearchReturn => {
       const result = await response.json();
 
       if (!response.ok) {
-        throw result.error.message;
+        throw result?.error?.message || result?.message;
       }
 
       setData(result);

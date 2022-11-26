@@ -1,3 +1,40 @@
 .Autocomplete {
   margin-top: 1em;
 }
+
+.Autocomplete-list {
+  margin-top: 5px;
+  max-height: 300px;
+  overflow-y: auto;
+  border-radius: 8px;
+  border: 1px solid black;
+  font-size: 1em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.25s;
+  width: 100%;
+}
+
+.Autocomplete-list ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.Autocomplete-list li {
+  text-align: left;
+  padding: 0.6em 1.2em;
+}
+
+.Autocomplete-list li:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.Autocomplete-item {
+  padding: 0.6em 1.2em;
+}
+
+.Autocomplete-item__error {
+  color: var(--danger-color);
+}

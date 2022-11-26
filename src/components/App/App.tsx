@@ -1,15 +1,30 @@
+import { useState } from "react";
 import Autocomplete from "@/components/Autocomplete";
+import useDebounce from "@/hooks/useDebounce";
+import { Search } from "@/interfaces/Search";
+import { useSearch } from "@/services/search";
 import "./App.css";
 
 function App() {
+  const [input, setInput] = useState("");
+  const debouncedSearch = useDebounce(input);
+  const [data, isLoading, error] = useSearch(debouncedSearch);
+
   return (
     <div className="App">
       <h1>Autocomplete</h1>
-      {
-        // TODO: We can improve it by handling fetch logic in parent component and passing data to the Autocomplete.
-        //       This method will help us to decouple business logic so we can use Autocomplete with any api requests.
-      }
-      <Autocomplete placeholder="Search City" onSelect={() => {}} />
+      <Autocomplete<Search>
+        highlight
+        value={input}
+        data={data}
+        isLoading={isLoading}
+        error={error}
+        keyName="id"
+        titleName="name"
+        placeholder="Search City"
+        onSelect={(item) => setInput(item.name)}
+        onChange={(value) => setInput(value)}
+      />
     </div>
   );
 }

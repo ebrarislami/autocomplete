@@ -1,19 +1,21 @@
-import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from "react";
-import { useSearch } from "@/services/search";
-import useDebounce from "@/hooks/useDebounce";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { ViewMode } from "@/interfaces/ViewMode";
+import { getHighlightedText } from "@/utils/highlight";
 import { AutocompleteProps } from "./types";
 import "./Autocomplete.css";
-import { getHighlightedText } from "@/utils/highlight";
 
-function Autocomplete({
+function Autocomplete<T>({
   onSelect,
-  initialValue = "",
+  onChange,
+  value = "",
   placeholder,
-}: AutocompleteProps) {
-  const [input, setInput] = useState(initialValue);
-  const debouncedSearch = useDebounce(input);
-  const [data, isLoading, error] = useSearch(debouncedSearch);
+  highlight,
+  isLoading,
+  error,
+  data,
+  keyName,
+  titleName,
+}: AutocompleteProps<T>) {
   const [showList, setShowList] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
@@ -26,26 +28,29 @@ function Autocomplete({
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setInput(e.target.value);
+    onChange(e.target.value);
     if (e.target.value.length > 0) {
       setShowList(true);
+    } else {
+      setShowList(false);
     }
   };
 
   const handleFocus = () => {
-    if (input.length > 0) {
+    if (value.length > 0) {
       setShowList(true);
     }
   };
 
-  const handleSelect = (e: MouseEvent<HTMLLIElement>, value: string) => {
+  const handleSelect = (item: T) => {
     setShowList(false);
-    setInput(value);
-    onSelect();
+    onSelect(item);
   };
 
   const renderAutocompleteList = () => {
     const viewMode = computeViewMode();
+
+    type KeyType = keyof typeof data[0];
 
     return (
       <div ref={listRef} className="Autocomplete-list">
@@ -60,11 +65,15 @@ function Autocomplete({
         )}
         {viewMode === ViewMode.Data && (
           <ul>
-            {data.map((item) => (
-              <li key={item.id} onClick={(e) => handleSelect(e, item.name)}>
-                {getHighlightedText(item.name, input)}
-              </li>
-            ))}
+            {data.map((item) => {
+              const name = String(item[titleName as KeyType]);
+              const key = String(item[keyName as KeyType]);
+              return (
+                <li key={key} onClick={() => handleSelect(item)}>
+                  {highlight ? getHighlightedText(name, value) : name}
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>
@@ -95,7 +104,7 @@ function Autocomplete({
         ref={inputRef}
         onFocus={handleFocus}
         onChange={handleInputChange}
-        value={input}
+        value={value}
         placeholder={placeholder}
       />
       {showList && renderAutocompleteList()}
